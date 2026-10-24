@@ -1,6 +1,13 @@
 
 
 import React, { useEffect, useState } from 'react';
+import {
+  calculateArrayCapacityKw,
+  calculatePanelCount,
+  isValidPanelCount,
+  MAX_PANEL_COUNT,
+  MIN_PANEL_COUNT,
+} from './solarCalculator.js';
 
 const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api';
 
@@ -96,6 +103,8 @@ function App() {
 
   const [panelWattage, setPanelWattage] = useState(550);
 
+  const [panelCountText, setPanelCountText] = useState('4');
+
   const [district, setDistrict] = useState('Ariyalur');
 
   const [lead, setLead] = useState({
@@ -176,9 +185,15 @@ function App() {
 
   const annualYield = TN_DISTRICT_YIELDS[district] ?? 1500;
 
-  const annualUnits = capacity * annualYield;
+  const parsedPanelCount = Number(panelCountText);
 
-  const panelCount = Math.ceil((capacity * 1000) / panelWattage);
+  const panelCount = isValidPanelCount(parsedPanelCount)
+    ? parsedPanelCount
+    : calculatePanelCount(capacity, panelWattage);
+
+  const actualCapacity = calculateArrayCapacityKw(panelCount, panelWattage);
+
+  const annualUnits = actualCapacity * annualYield;
 
   const monthlyUnits = annualUnits / 12;
 
@@ -722,6 +737,22 @@ function App() {
 
     setCapacity(nextCapacity);
 
+    setPanelCountText(String(calculatePanelCount(nextCapacity, panelWattage)));
+
+  }
+
+  function changePanelWattage(nextWattage) {
+
+    setPanelWattage(nextWattage);
+
+    setPanelCountText(String(calculatePanelCount(capacity, nextWattage)));
+
+  }
+
+  function changePanelCount(event) {
+
+    setPanelCountText(event.target.value);
+
   }
 
   return (
@@ -991,11 +1022,25 @@ function App() {
               </label>
               <label>
                 Panel rating
-                <select value={panelWattage} onChange={(e) => setPanelWattage(Number(e.target.value))}>
+                <select value={panelWattage} onChange={(e) => changePanelWattage(Number(e.target.value))}>
                   {[400, 450, 500, 550, 600].map((watts) => (
                     <option key={watts} value={watts}>{watts} W panel</option>
                   ))}
                 </select>
+              </label>
+              <label>
+                Number of panels to install
+                <input
+                  type="number"
+                  min={MIN_PANEL_COUNT}
+                  max={MAX_PANEL_COUNT}
+                  step="1"
+                  value={panelCountText}
+                  onChange={changePanelCount}
+                  onBlur={() => setPanelCountText(String(panelCount))}
+                  aria-label="Number of solar panels to install"
+                  aria-invalid={!isValidPanelCount(parsedPanelCount)}
+                />
               </label>
               <label>
                 District / yield profile
@@ -1005,7 +1050,7 @@ function App() {
               </label>
               <div className="calculator-hint">
                 Planning size: <b>{capacity} kW</b>. Estimated generation uses the selected district profile of{' '}
-                <b>{annualYield.toLocaleString('en-IN')} kWh/kWp/year</b>. Panel count is rounded up from system size ÷ panel rating. These are provisional planning assumptions, not a production guarantee.
+                <b>{annualYield.toLocaleString('en-IN')} kWh/kWp/year</b>. Panel count starts from your target, and you can edit it. System size and generation update from the selected panel quantity.
               </div>
             </div>
 
@@ -1015,9 +1060,9 @@ function App() {
                 <span className="live-dot">● Indicative</span>
               </div>
               <div className="result-main">
-                <small>Selected planning size</small>
-                <b>{capacity} kW</b>
-                <span>Final size and equipment depend on a site assessment.</span>
+                <small>Estimated system size from selected panels</small>
+                <b>{actualCapacity.toFixed(2)} kW</b>
+                <span>Planning target: {capacity} kW. Final equipment depends on a site assessment.</span>
               </div>
               <div className="panel-count-callout" aria-live="polite">
                 <div>
@@ -1037,7 +1082,7 @@ function App() {
                 href="#contact"
                 onClick={() => setLead((p) => ({
                   ...p,
-                  message: `Please contact me about a rooftop solar system around ${capacity} kW in ${district}, estimated at ${panelCount} × ${panelWattage} W panels.`,
+                  message: `Please contact me about a rooftop solar system around ${actualCapacity.toFixed(2)} kW in ${district}, with ${panelCount} × ${panelWattage} W panels (planning target ${capacity} kW).`,
                 }))}
               >
                 Request a tailored quote ↗
