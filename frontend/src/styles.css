@@ -701,6 +701,45 @@ h2 em {
   line-height: 1.6;
 }
 
+.panel-count-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 9px;
+  background: #E7B653;
+  color: #102B3B;
+}
+
+.panel-count-callout span,
+.panel-count-callout small {
+  display: block;
+}
+
+.panel-count-callout span {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.panel-count-callout div > small {
+  margin-top: 4px;
+  font-size: 9px;
+}
+
+.panel-count-callout > b {
+  flex: 0 0 auto;
+  font-family: Manrope, sans-serif;
+  font-size: 27px;
+}
+
+.panel-count-callout > b small {
+  display: inline;
+  font-family: inherit;
+  font-size: 11px;
+}
+
 .result-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

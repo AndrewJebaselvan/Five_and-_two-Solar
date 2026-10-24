@@ -1019,8 +1019,14 @@ function App() {
                 <b>{capacity} kW</b>
                 <span>Final size and equipment depend on a site assessment.</span>
               </div>
+              <div className="panel-count-callout" aria-live="polite">
+                <div>
+                  <span>Approx. panels to be installed</span>
+                  <small>Based on {panelWattage} W panels</small>
+                </div>
+                <b>{panelCount}<small> panels</small></b>
+              </div>
               <div className="result-metrics">
-                <div><span>Estimated panels</span><b>{panelCount} <small>panels</small></b></div>
                 <div><span>Panel rating</span><b>{panelWattage} <small>W each</small></b></div>
                 <div><span>Daily energy</span><b>{dailyUnits.toFixed(1)} <small>units</small></b></div>
                 <div><span>Monthly energy</span><b>{monthlyUnits.toFixed(0)} <small>units</small></b></div>
