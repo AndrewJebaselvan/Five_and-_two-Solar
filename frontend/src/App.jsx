@@ -94,6 +94,8 @@ function App() {
 
   const [capacity, setCapacity] = useState(2);
 
+  const [panelWattage, setPanelWattage] = useState(550);
+
   const [district, setDistrict] = useState('Ariyalur');
 
   const [lead, setLead] = useState({
@@ -175,6 +177,8 @@ function App() {
   const annualYield = TN_DISTRICT_YIELDS[district] ?? 1500;
 
   const annualUnits = capacity * annualYield;
+
+  const panelCount = Math.ceil((capacity * 1000) / panelWattage);
 
   const monthlyUnits = annualUnits / 12;
 
@@ -986,6 +990,14 @@ function App() {
                 </select>
               </label>
               <label>
+                Panel rating
+                <select value={panelWattage} onChange={(e) => setPanelWattage(Number(e.target.value))}>
+                  {[400, 450, 500, 550, 600].map((watts) => (
+                    <option key={watts} value={watts}>{watts} W panel</option>
+                  ))}
+                </select>
+              </label>
+              <label>
                 District / yield profile
                 <select value={district} onChange={(e) => setDistrict(e.target.value)}>
                   {TN_DISTRICTS.map((name) => <option key={name} value={name}>{name}</option>)}
@@ -993,7 +1005,7 @@ function App() {
               </label>
               <div className="calculator-hint">
                 Planning size: <b>{capacity} kW</b>. Estimated generation uses the selected district profile of{' '}
-                <b>{annualYield.toLocaleString('en-IN')} kWh/kWp/year</b>. These are provisional planning assumptions, not a production guarantee.
+                <b>{annualYield.toLocaleString('en-IN')} kWh/kWp/year</b>. Panel count is rounded up from system size ÷ panel rating. These are provisional planning assumptions, not a production guarantee.
               </div>
             </div>
 
@@ -1008,6 +1020,8 @@ function App() {
                 <span>Final size and equipment depend on a site assessment.</span>
               </div>
               <div className="result-metrics">
+                <div><span>Estimated panels</span><b>{panelCount} <small>panels</small></b></div>
+                <div><span>Panel rating</span><b>{panelWattage} <small>W each</small></b></div>
                 <div><span>Daily energy</span><b>{dailyUnits.toFixed(1)} <small>units</small></b></div>
                 <div><span>Monthly energy</span><b>{monthlyUnits.toFixed(0)} <small>units</small></b></div>
                 <div><span>Annual energy</span><b>{Math.round(annualUnits).toLocaleString('en-IN')} <small>units</small></b></div>
@@ -1017,7 +1031,7 @@ function App() {
                 href="#contact"
                 onClick={() => setLead((p) => ({
                   ...p,
-                  message: `Please contact me about a rooftop solar system around ${capacity} kW in ${district}.`,
+                  message: `Please contact me about a rooftop solar system around ${capacity} kW in ${district}, estimated at ${panelCount} × ${panelWattage} W panels.`,
                 }))}
               >
                 Request a tailored quote ↗
