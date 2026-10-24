@@ -1,0 +1,35 @@
+[
+  {
+    "title": "How rooftop solar generation is estimated",
+    "content": "A planning estimate depends on installed capacity, local solar resource, shade, roof orientation and tilt, weather, equipment, and system losses. The website calculator uses district-specific annual yield assumptions that have not yet been independently verified. Calculator results are indicative only and are not a production guarantee.",
+    "keywords": ["generation", "energy", "units", "kWh", "calculator", "yield", "daily", "monthly", "annual", "estimate", "output"],
+    "source_url": ""
+  },
+  {
+    "title": "What is included in panel catalogue prices",
+    "content": "Panel catalogue prices must be entered from verified supplier information and represent panel equipment only. They are not a complete rooftop system price. A complete quote may also include an inverter, mounting structure, wiring, installation, transport, approvals and taxes. Ask for a site assessment for a tailored quotation.",
+    "keywords": ["panel", "price", "cost", "catalogue", "brand", "quotation", "quote", "inverter", "installation", "equipment"],
+    "source_url": ""
+  },
+  {
+    "title": "Government solar schemes and eligibility",
+    "content": "Scheme rules, eligibility, subsidy amounts and availability can change. The assistant must not make eligibility decisions or promise an amount. Direct customers to the official PM Surya Ghar portal and the Tamil Nadu Solar Homes portal for current information. Five and Two Energy Solutions is not a government agency.",
+    "keywords": ["government", "scheme", "subsidy", "PM Surya Ghar", "Tamil Nadu Solar Homes", "eligibility", "assistance", "state support"],
+    "source_url": "https://pmsuryaghar.gov.in/",
+    "additional_sources": [
+      {"title": "Tamil Nadu Solar Homes portal", "url": "https://www.tnebltd.gov.in/usrp/"}
+    ]
+  },
+  {
+    "title": "Grid-connected solar at night",
+    "content": "Solar panels do not generate electricity at night. A grid-connected home draws power from the grid when solar generation is insufficient unless it has a suitable battery system.",
+    "keywords": ["night", "dark", "battery", "grid", "electricity", "storage"],
+    "source_url": ""
+  },
+  {
+    "title": "Request a callback",
+    "content": "Customers can request a callback through the website form or the chatbot callback form. Contact details are saved only when the customer submits the form and gives consent. Do not ask customers to provide personal contact information in free-text chat.",
+    "keywords": ["callback", "contact", "call", "site visit", "personal details", "consent"],
+    "source_url": ""
+  }
+]

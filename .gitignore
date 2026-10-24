@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.db
+instance/
+
+# Node
+node_modules/
+dist/
+frontend/.env
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db
