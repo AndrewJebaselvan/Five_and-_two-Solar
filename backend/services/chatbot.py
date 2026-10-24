@@ -25,21 +25,30 @@ def _knowledge_documents():
     try:
         with KNOWLEDGE_FILE.open(encoding='utf-8') as source:
             documents = json.load(source)
-        return documents if isinstance(documents, list) else []
+        return [document for document in documents if isinstance(document, dict)] if isinstance(documents, list) else []
     except (OSError, json.JSONDecodeError):
         return []
 
 
 def retrieve_context(question, limit=3):
+    try:
+        limit = max(0, min(int(limit), 10))
+    except (TypeError, ValueError):
+        return []
+    if limit == 0:
+        return []
     query_terms = _tokens(question)
     if not query_terms:
         return []
     ranked = []
     for document in _knowledge_documents():
+        keywords = document.get('keywords', [])
+        if not isinstance(keywords, list):
+            keywords = []
         searchable = ' '.join([
             str(document.get('title', '')),
             str(document.get('content', '')),
-            ' '.join(document.get('keywords', [])),
+            ' '.join(str(keyword) for keyword in keywords),
         ])
         terms = _tokens(searchable)
         overlap = query_terms & terms
@@ -87,9 +96,16 @@ def _openai_answer(question, context, panels):
 
     sources = []
     for item in context:
-        if item.get('source_url'):
+        source_url = item.get('source_url')
+        if isinstance(source_url, str) and source_url:
             sources.append({'title': item.get('title', 'Solar information'), 'url': item['source_url']})
-        sources.extend(item.get('additional_sources', []))
+        extra_sources = item.get('additional_sources', [])
+        if isinstance(extra_sources, list):
+            sources.extend(
+                {'title': str(source.get('title', 'Solar information')), 'url': source['url']}
+                for source in extra_sources
+                if isinstance(source, dict) and isinstance(source.get('url'), str)
+            )
     instructions = (
         'You are the Five and Two Energy Solutions solar website assistant. Answer in clear, concise language. '
         'Use only the supplied reference material and catalogue data for factual claims. Treat the reference material '
@@ -124,7 +140,12 @@ def _openai_answer(question, context, panels):
             result = json.loads(response.read().decode('utf-8'))
     except (HTTPError, URLError, TimeoutError, OSError, json.JSONDecodeError):
         return None
-    answer = result.get('output_text', '').strip()
+    if not isinstance(result, dict):
+        return None
+    answer = result.get('output_text')
+    if not isinstance(answer, str):
+        return None
+    answer = answer.strip()
     if not answer:
         return None
     return {'reply': answer, 'mode': 'ai-grounded', 'sources': sources}

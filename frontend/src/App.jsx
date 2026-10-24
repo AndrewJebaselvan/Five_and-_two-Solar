@@ -532,8 +532,6 @@ function App() {
 
       setNotice('Admin login successful.');
 
-      await loadAdminData(data.token);
-
     } catch (err) {
 
       setNotice(err.message);
@@ -602,11 +600,29 @@ function App() {
 
   function logoutAdmin() {
 
+    const token = adminToken;
+
+    if (token) {
+
+      fetch(`${API}/admin/logout`, {
+
+        method: 'POST',
+
+        headers: { Authorization: `Bearer ${token}` },
+
+      }).catch(() => {});
+
+    }
+
     sessionStorage.removeItem('solarAdminToken');
 
     setAdminToken('');
 
     setLeads([]);
+
+    setAdminPanels([]);
+
+    setActivity([]);
 
   }
 
