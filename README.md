@@ -132,7 +132,19 @@ VITE_API_URL=http://127.0.0.1:5000/api
 
 Restart Vite after changing environment variables.
 
-## 5. Sign in to the admin dashboard
+## 5. Free demo deployment (Render + Neon)
+
+GitHub can store the source and trigger deploys, but GitHub Pages only serves static files and cannot run this Flask API. For a free demo, deploy the frontend as a Render Static Site, the Flask API as a Render Web Service, and use Neon PostgreSQL for persistent database storage. The backend requirements include Gunicorn and PostgreSQL support for this setup.
+
+1. Push the project to a GitHub repository. Confirm `.env`, virtual environments, `node_modules` and build output are not committed.
+2. Create a PostgreSQL project in Neon and copy its connection string. Keep it private.
+3. In Render, create a Web Service from the repository with **Root Directory** `backend`, **Build Command** `pip install -r requirements.txt`, **Start Command** `gunicorn app:app --bind 0.0.0.0:$PORT`, and the **Free** plan. Set `DATABASE_URL` to the Neon connection string, plus `SECRET_KEY`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `CORS_ORIGINS` in the service environment.
+4. Create a Render Static Site from the same repository with **Root Directory** `frontend`, **Build Command** `npm ci && npm run build`, and **Publish Directory** `dist`. Set the build environment variable `VITE_API_URL` to the backend URL ending in `/api` (for example, `https://your-api.onrender.com/api`).
+5. Copy the static site URL into the backend's `CORS_ORIGINS` value, then redeploy the backend. Use the static site URL to open the app and test enquiries.
+
+Render's free web services sleep after 15 minutes without traffic and can take about a minute to wake. Keep the Neon connection string and admin credentials in provider environment settings, never in the repository. Free tiers are suitable for demos and learning; they do not provide production availability guarantees, so confirm current quotas and data-retention terms before collecting real customer leads. [Render free service limits](https://render.com/docs/free), [Neon Free plan](https://neon.com/docs/introduction/free-tier).
+
+## 6. Sign in to the admin dashboard
 
 - On the website press **Ctrl + Shift + A**, or click **Admin** in the footer.
 - Use the username/password configured in `backend/.env`.
@@ -140,7 +152,7 @@ Restart Vite after changing environment variables.
 - Change its status to test the CRUD/update flow.
 - The **Panel prices** tab reads catalogue records from the database. Add verified panel records before using panel pricing and calculator features.
 
-## 6. REST API overview
+## 7. REST API overview
 
 | Method | Endpoint | Purpose | Access |
 |---|---|---|---|
@@ -155,7 +167,7 @@ Restart Vite after changing environment variables.
 | PUT | `/api/admin/panels/:id` | Update panel price/status | Admin token |
 | GET | `/api/admin/activity` | Recent admin activity | Admin token |
 
-## 7. Calculation assumptions
+## 8. Calculation assumptions
 
 - Installed capacity is selected as a 1 kW, 2 kW or 3 kW planning size in the calculator.
 - Estimated annual energy (kWh/units) = installed capacity (kWp) × annual yield (kWh/kWp/year).
@@ -164,7 +176,7 @@ Restart Vite after changing environment variables.
 - The calculator provides energy estimates only, not equipment pricing or a full system quotation. Inverter, mounting structure, wiring, installation, transport, approvals, taxes and other costs depend on the site and final design.
 - District yield values are provisional planning assumptions. Final generation estimates require verified local data and a site assessment.
 
-## 8. Government scheme links and accuracy
+## 9. Government scheme links and accuracy
 
 - PM Surya Ghar: `https://pmsuryaghar.gov.in/`
 - Tamil Nadu Solar Homes portal: `https://www.tnebltd.gov.in/usrp/`
@@ -172,7 +184,7 @@ Restart Vite after changing environment variables.
 
 The site deliberately avoids promising a subsidy. The Tamil Nadu portal has advertised a state top-up alongside the central programme, but amounts, eligibility, current Government Orders and release conditions must be re-verified on the official portal. The site is not an official government service.
 
-## 9. Important security and production work still required
+## 10. Important security and production work still required
 
 This project is designed as a 3-day interview-preparation MVP, not a production launch. Before public deployment:
 
