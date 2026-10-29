@@ -685,6 +685,42 @@ function App() {
 
   }
 
+  async function deleteLead(id, name) {
+
+    if (!window.confirm(`Delete the enquiry from ${name}? This cannot be undone.`)) return;
+
+    try {
+
+      const res = await fetch(`${API}/admin/leads/${id}`, {
+
+        method: 'DELETE',
+
+        headers: { Authorization: `Bearer ${adminToken}` },
+
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+
+        setNotice(data.error || 'Could not delete the enquiry.');
+
+        return;
+
+      }
+
+      setNotice('Customer enquiry deleted.');
+
+      await loadAdminData();
+
+    } catch (err) {
+
+      setNotice(err.message || 'Could not delete the enquiry.');
+
+    }
+
+  }
+
   async function updatePanel(panel) {
 
     try {
@@ -1678,21 +1714,31 @@ function App() {
 
                           </div>
 
-                          <select value={l.status} onChange={(e) => updateLeadStatus(l.id, e.target.value)}>
+                          <div className="admin-lead-actions">
 
-                            <option>New</option>
+                            <select value={l.status} onChange={(e) => updateLeadStatus(l.id, e.target.value)}>
 
-                            <option>Contacted</option>
+                              <option>New</option>
 
-                            <option>Site Visit Scheduled</option>
+                              <option>Contacted</option>
 
-                            <option>Quoted</option>
+                              <option>Site Visit Scheduled</option>
 
-                            <option>Converted</option>
+                              <option>Quoted</option>
 
-                            <option>Not Interested</option>
+                              <option>Converted</option>
 
-                          </select>
+                              <option>Not Interested</option>
+
+                            </select>
+
+                            <button className="admin-delete" onClick={() => deleteLead(l.id, l.name)}>
+
+                              Delete
+
+                            </button>
+
+                          </div>
 
                         </article>
 

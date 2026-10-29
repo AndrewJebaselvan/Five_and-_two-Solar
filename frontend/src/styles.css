@@ -1504,6 +1504,27 @@ footer > small {
   background: #FFFFFF;
 }
 
+.admin-lead-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-delete {
+  border: 1px solid #D9A7A4;
+  border-radius: 6px;
+  padding: 9px 11px;
+  background: #FFFFFF;
+  color: #A33F39;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-delete:hover {
+  background: #FFF1EF;
+}
+
 .price-edit {
   display: grid;
   grid-template-columns: 1fr 150px auto;
@@ -1752,6 +1773,15 @@ footer > small {
   .admin-lead select {
     max-width: 100%;
     width: 100%;
+  }
+
+  .admin-lead-actions {
+    width: 100%;
+  }
+
+  .admin-lead-actions select {
+    flex: 1;
+    min-width: 0;
   }
 
   .admin-toolbar {

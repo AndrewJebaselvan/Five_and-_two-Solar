@@ -259,6 +259,21 @@ def create_app():
         activity_log('Lead status changed', f'Lead #{lead.id}: {old} → {status}')
         return jsonify(lead_json(lead))
 
+    @app.delete('/api/admin/leads/<int:lead_id>')
+    @require_admin
+    def delete_lead(lead_id):
+        lead = db.session.get(Lead, lead_id)
+        if not lead:
+            return jsonify({'error': 'Lead not found.'}), 404
+        db.session.delete(lead)
+        db.session.add(Activity(
+            admin_username=g.admin_username,
+            action='Lead deleted',
+            details=f'Lead #{lead_id} deleted.',
+        ))
+        db.session.commit()
+        return jsonify({'message': 'Lead deleted.', 'id': lead_id})
+
     @app.get('/api/admin/panels')
     @require_admin
     def admin_panels():

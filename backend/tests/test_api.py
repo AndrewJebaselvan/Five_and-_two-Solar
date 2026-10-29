@@ -253,6 +253,36 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(updated.get_json()['status'], 'Contacted')
         self.assertEqual(Activity.query.count(), 2)
 
+    def test_admin_can_delete_lead_and_deletion_is_logged(self):
+        created = self.client.post('/api/leads', json=self.valid_lead())
+        lead_id = created.get_json()['id']
+        headers = self.admin_headers()
+
+        response = self.client.delete(f'/api/admin/leads/{lead_id}', headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {'message': 'Lead deleted.', 'id': lead_id})
+        self.assertIsNone(db.session.get(Lead, lead_id))
+        self.assertEqual(self.client.get('/api/admin/leads', headers=headers).get_json(), [])
+        deletion = Activity.query.filter_by(action='Lead deleted').one()
+        self.assertEqual(deletion.details, f'Lead #{lead_id} deleted.')
+
+    def test_delete_lead_requires_admin_authentication(self):
+        created = self.client.post('/api/leads', json=self.valid_lead())
+        lead_id = created.get_json()['id']
+
+        response = self.client.delete(f'/api/admin/leads/{lead_id}')
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIsNotNone(db.session.get(Lead, lead_id))
+
+    def test_delete_missing_lead_returns_404_without_activity_entry(self):
+        response = self.client.delete('/api/admin/leads/999', headers=self.admin_headers())
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.get_json(), {'error': 'Lead not found.'})
+        self.assertEqual(Activity.query.filter_by(action='Lead deleted').count(), 0)
+
     def test_admin_rejects_invalid_status_and_unknown_lead(self):
         headers = self.admin_headers()
         self.assertEqual(self.client.patch('/api/admin/leads/999', json={'status': 'Converted'}, headers=headers).status_code, 404)
